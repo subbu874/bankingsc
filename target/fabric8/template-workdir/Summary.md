@@ -1,0 +1,1 @@
+Simple Wildfly Application deployed as war

@@ -1,0 +1,99 @@
+{
+  "apiVersion" : "v1",
+  "kind" : "Template",
+  "labels" : { },
+  "metadata" : {
+    "annotations" : {
+      "fabric8.bankingwala/summary" : "Simple Wildfly Application deployed as war",
+      "description" : "# Wildlfy QuickStart\r\n\r\nThis example shows a Wildfly quickstart on Kubernetes/Openshift with Fabric8.\r\n\r\nThis quickstart exposes a simple application deployed on top of Wildfly 9.0.1.Final.\r\n\r\nThere is a simple REST service. This service can be called from the home page of the application.\r\n\r\nThe example is based on Markus Eisele blog post:\r\n\r\nhttp://blog.eisele.net/2015/07/running-wildfly-on-openshift-3-with-kubernetes-fabric8-on-windows.html\r\n\r\n# Installation\r\n\r\nYou'll need to have Kubernetes and openshift v3 installed and running on your machine.\r\n\r\nYou can use the Fabric8-installer: https://github.com/fabric8io/fabric8-installer\r\n\r\nIn particular this vagrant image: https://github.com/fabric8io/fabric8-installer/tree/master/vagrant/openshift\r\n\r\n```\r\nmvn clean package docker:build\r\nmvn fabric8:json fabric8:apply\r\n\r\n```\r\n\r\nYou'll need to modify you `/etc/hosts` file by adding this address to `172.28.128.4` \r\n\r\n```\r\n172.28.128.4 quickstart-wildfly.vagrant.f8\r\n\r\n```\r\n\r\nNow you should see the homepage on http://quickstart-wildfly.vagrant.f8/. If you follow the \"get greetings\" link you should get the following message:\r\n\r\n```\r\nHi fabric8 you're receiving this message from pod <Pod_name>\r\n\r\n```\r\n\r\n\r\nYou can also call the REST service from a shell script. We have provided a script named `test-script.sh` (no script for windows)\r\nwhich will call the service once every five second for one hundred times. \r\n\r\nYou may need to add execution permission to the script before you can execute it\r\n\r\n    chmod +x test-script.sh\r\n\r\nAnd then run the script\r\n\r\n    ./test-script.sh\r\n\r\nWhile the script runs, you can try to scale up or down the number of pods on the REST service using either the fabric8 web console,\r\nor from the command line using the openshift client\r\n\r\n    oc scale --replicas=3 replicationcontrollers quickstart-wildfly\r\n",
+      "fabric8.bankingwala/iconUrl" : "https://cdn.rawgit.com/fabric8io/fabric8/master/fabric8-maven-plugin/src/main/resources/icons/java.svg"
+    },
+    "labels" : { },
+    "name" : "bankingwala"
+  },
+  "objects" : [ {
+    "apiVersion" : "v1",
+    "kind" : "Service",
+    "metadata" : {
+      "annotations" : { },
+      "labels" : {
+        "container" : "wildfly",
+        "component" : "bankingwala",
+        "provider" : "fabric8",
+        "group" : "quickstarts"
+      },
+      "name" : "quickstart-wildfly"
+    },
+    "spec" : {
+      "deprecatedPublicIPs" : [ ],
+      "ports" : [ {
+        "port" : 9101,
+        "protocol" : "TCP",
+        "targetPort" : 8080
+      } ],
+      "selector" : {
+        "container" : "wildfly",
+        "component" : "bankingwala",
+        "provider" : "fabric8",
+        "group" : "quickstarts"
+      }
+    }
+  }, {
+    "apiVersion" : "v1",
+    "kind" : "ReplicationController",
+    "metadata" : {
+      "annotations" : { },
+      "labels" : {
+        "container" : "wildfly",
+        "component" : "bankingwala",
+        "provider" : "fabric8",
+        "group" : "quickstarts"
+      },
+      "name" : "bankingwala"
+    },
+    "spec" : {
+      "replicas" : 1,
+      "selector" : {
+        "container" : "wildfly",
+        "component" : "bankingwala",
+        "provider" : "fabric8",
+        "group" : "quickstarts"
+      },
+      "template" : {
+        "metadata" : {
+          "annotations" : { },
+          "labels" : {
+            "container" : "wildfly",
+            "component" : "bankingwala",
+            "provider" : "fabric8",
+            "group" : "quickstarts"
+          }
+        },
+        "spec" : {
+          "containers" : [ {
+            "args" : [ ],
+            "command" : [ ],
+            "env" : [ {
+              "name" : "KUBERNETES_NAMESPACE",
+              "valueFrom" : {
+                "fieldRef" : {
+                  "fieldPath" : "metadata.namespace"
+                }
+              }
+            } ],
+            "image" : "docker.io/fabric8/bankingwala:1.0-SNAPSHOT",
+            "imagePullPolicy" : "IfNotPresent",
+            "name" : "bankingwala",
+            "ports" : [ ],
+            "securityContext" : { },
+            "volumeMounts" : [ ]
+          } ],
+          "imagePullSecrets" : [ ],
+          "nodeSelector" : { },
+          "volumes" : [ ]
+        }
+      }
+    }
+  } ],
+  "parameters" : [ ]
+}
